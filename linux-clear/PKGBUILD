@@ -214,26 +214,24 @@ prepare() {
     # Library routines
     scripts/config --enable FONT_TER16x32
 
-    if [ -n "$_use_llvm_lto" ]; then
-        scripts/config --disable LTO_NONE \
-                       --enable LTO \
-                       --enable LTO_CLANG \
-                       --enable ARCH_SUPPORTS_LTO_CLANG \
-                       --enable ARCH_SUPPORTS_LTO_CLANG_THIN \
-                       --enable HAS_LTO_CLANG \
-                       --enable LTO_CLANG_THIN \
-                       --enable HAVE_GCC_PLUGINS
-    fi
-
-    # AMDGPU
+   # AMDGPU
     scripts/config --enable CONFIG_DRM_AMDGPU_SI \
-                   --enable CONFIG_DRM_AMDGPU_CIK
+                   --enable CONFIG_DRM_AMDGPU_CIK \
+                   --enable CONFIG_DRM_AMDGPU_USERPTR \
+                   --enable CONFIG_DRM_AMD_ACP \
+                   --enable CONFIG_DRM_AMD_DC \
+                   --enable CONFIG_DRM_AMD_DC_DCN \
+                   --enable CONFIG_DRM_AMD_DC_HDCP \
+                   --enable CONFIG_DRM_AMD_DC_SI \
+                   --enable CONFIG_DRM_AMD_SECURE_DISPLAY \
+                   --enable CONFIG_HSA_AMD \
+                   --enable CONFIG_HSA_AMD_SVM \
+                   --enable CONFIG_VGA_SWITCHEROO \
+                   --enable CONFIG_DRM
 
     # BBR
     scripts/config --enable CONFIG_TCP_CONG_ADVANCED \
-                   --module CONFIG_TCP_CONG_BBR \
-                   --enable CONFIG_TCP_CONG_BBR2 \
-                   --set-str CONFIG_DEFAULT_TCP_CONG="bbr2"
+                   --enable CONFIG_TCP_CONG_BBR
     # NET_SCH
     scripts/config --enable CONFIG_NET_SCHED \
                    --module CONFIG_NET_SCH_CBQ \
@@ -268,15 +266,27 @@ prepare() {
                    --module CONFIG_NET_SCH_INGRESS \
                    --module CONFIG_NET_SCH_PLUG \
                    --module CONFIG_NET_SCH_ETS \
-                   --enable CONFIG_NET_SCH_DEFAULT \
-                   --enable CONFIG_DEFAULT_FQ_CODEL	\
-                   --set-str CONFIG_DEFAULT_NET_SCH="fq_codel"
+                   --enable CONFIG_NET_SCH_DEFAULT
 
     # IO Schedulers
     scripts/config --enable CONFIG_MQ_IOSCHED_DEADLINE \
                    --enable CONFIG_MQ_IOSCHED_KYBER \
                    --enable CONFIG_IOSCHED_BFQ \
                    --enable CONFIG_BFQ_GROUP_IOSCHED
+
+
+    if [ -n "$_use_llvm_lto" ]; then
+        scripts/config --disable LTO_NONE \
+                       --enable LTO \
+                       --enable LTO_CLANG \
+                       --enable ARCH_SUPPORTS_LTO_CLANG \
+                       --enable ARCH_SUPPORTS_LTO_CLANG_THIN \
+                       --enable HAS_LTO_CLANG \
+                       --enable LTO_CLANG_THIN \
+                       --enable HAVE_GCC_PLUGINS
+    fi
+
+ 
 
     make ${BUILD_FLAGS[*]} olddefconfig
     diff -u $srcdir/$pkgbase/config .config || :
